@@ -1,8 +1,6 @@
 import React from "react";
 
 const Pagination = ({ totalPage, gotoPage }) => {
-  console.log(totalPage);
-
   return (
     <nav aria-label="...">
       <ul className="pagination pagination-lg">

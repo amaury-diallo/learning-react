@@ -30,7 +30,10 @@ class MovieList extends Component {
 
     return (
       <main className="container pt-3">
-        <p>Showing {this.state.movies.length} movies in the database</p>
+        <p>
+          Showing {this.state.movies.slice(...this.getRange()).length} movies in
+          the database
+        </p>
         <table className="table">
           <thead>
             <tr>
@@ -80,17 +83,15 @@ class MovieList extends Component {
   };
 
   gotoPage = (index) => {
-    console.log(index, this.state.CURRENT_PAGE);
     this.setState({ CURRENT_PAGE: index });
-    console.log(this.state.CURRENT_PAGE);
   };
 
   togglePagination = () =>
     this.state.movies.length / this.state.MOVIE_PER_PAGE > 1 ? (
       <Pagination
-        totalPage={
-          Math.floor(-this.state.movies.length / this.state.MOVIE_PER_PAGE) * -1
-        }
+        totalPage={Math.ceil(
+          this.state.movies.length / this.state.MOVIE_PER_PAGE
+        )}
         gotoPage={this.gotoPage}
       />
     ) : (
