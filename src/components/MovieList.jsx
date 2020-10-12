@@ -37,14 +37,11 @@ class MovieList extends Component {
       key,
       this.state.sortingOrder
     );
-    this.setState(
-      (prevState) => ({
-        movies: sortedMovies,
-        sortingOrder: this.toggleOrder(prevState.sortingOrder),
-        sortedBy: key,
-      }),
-      () => console.log(this.state)
-    );
+    this.setState((prevState) => ({
+      movies: sortedMovies,
+      sortingOrder: this.toggleOrder(prevState.sortingOrder),
+      sortedBy: key,
+    }));
   };
 
   toggleOrderingIcon = (key) => {
@@ -144,6 +141,20 @@ class MovieList extends Component {
   gotoPage = (index) => {
     this.setState({ CURRENT_PAGE: index });
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    const pages = _.chunk(this.state.movies, this.state.MOVIE_PER_PAGE);
+
+    let currentPageIndex = this.state.CURRENT_PAGE;
+    const isCurrentPageEmpty = () => !pages[currentPageIndex - 1];
+
+    while (isCurrentPageEmpty()) {
+      if (currentPageIndex <= 0) break;
+
+      --currentPageIndex;
+      this.setState({ CURRENT_PAGE: currentPageIndex });
+    }
+  }
 
   render() {
     return this.renderMovies();
