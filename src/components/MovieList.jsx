@@ -104,7 +104,8 @@ class MovieList extends Component {
           </div>
           <div className="col">
             <p>
-              Showing {this.getVisibleMovies().length} movies in the database
+              Showing {this.getVisibleMovies().slice(...this.getRange()).length}{" "}
+              movies in the database
             </p>
             <table className="table">
               <thead>
