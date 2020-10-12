@@ -93,6 +93,7 @@ class MovieList extends Component {
           this.state.movies.length / this.state.MOVIE_PER_PAGE
         )}
         gotoPage={this.gotoPage}
+        currentPage={this.state.CURRENT_PAGE}
       />
     ) : (
       ""
