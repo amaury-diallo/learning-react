@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+import _ from "lodash";
+import { FaSortDown, FaSortUp } from "react-icons/fa";
+
 import { getMovies } from "../services/fakeMovieService";
 import Like from "./Like";
 import Pagination from "./Pagination";
@@ -9,6 +12,8 @@ class MovieList extends Component {
     movies: getMovies(),
     MOVIE_PER_PAGE: 4,
     CURRENT_PAGE: 1,
+    sortingOrder: "asc",
+    sortedBy: null,
   };
 
   handleLike = ({ _id }) => {
@@ -24,6 +29,34 @@ class MovieList extends Component {
     this.state.CURRENT_PAGE * this.state.MOVIE_PER_PAGE,
   ];
 
+  toggleOrder = (currentOrder) => (currentOrder === "asc" ? "desc" : "asc");
+
+  sortMoviesBy = (key) => {
+    const sortedMovies = _.orderBy(
+      this.state.movies,
+      key,
+      this.state.sortingOrder
+    );
+    this.setState(
+      (prevState) => ({
+        movies: sortedMovies,
+        sortingOrder: this.toggleOrder(prevState.sortingOrder),
+        sortedBy: key,
+      }),
+      () => console.log(this.state)
+    );
+  };
+
+  toggleOrderingIcon = (key) => {
+    return key === this.state.sortedBy ? (
+      this.state.sortingOrder === "asc" ? (
+        <FaSortDown />
+      ) : (
+        <FaSortUp />
+      )
+    ) : null;
+  };
+
   renderMovies = () => {
     if (this.state.movies.length === 0)
       return <p>There are no movies to display</p>;
@@ -37,12 +70,32 @@ class MovieList extends Component {
         <table className="table">
           <thead>
             <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Genre</th>
-              <th scope="col">Stock</th>
-              <th scope="col">Rate</th>
-              <th scope="col"></th>
-              <th scope="col"></th>
+              <th
+                className="clickable"
+                onClick={() => this.sortMoviesBy("title")}
+              >
+                Title {this.toggleOrderingIcon("title")}
+              </th>
+              <th
+                className="clickable"
+                onClick={() => this.sortMoviesBy("genre.name")}
+              >
+                Genre {this.toggleOrderingIcon("genre.name")}
+              </th>
+              <th
+                className="clickable"
+                onClick={() => this.sortMoviesBy("numberInStock")}
+              >
+                Stock {this.toggleOrderingIcon("numberInStock")}
+              </th>
+              <th
+                className="clickable"
+                onClick={() => this.sortMoviesBy("dailyRentalRate")}
+              >
+                Rate {this.toggleOrderingIcon("dailyRentalRate")}
+              </th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -71,7 +124,13 @@ class MovieList extends Component {
             ))}
           </tbody>
         </table>
-        {this.togglePagination()}
+        <Pagination
+          totalPage={Math.ceil(
+            this.state.movies.length / this.state.MOVIE_PER_PAGE
+          )}
+          gotoPage={this.gotoPage}
+          currentPage={this.state.CURRENT_PAGE}
+        />
       </main>
     );
   };
@@ -85,19 +144,6 @@ class MovieList extends Component {
   gotoPage = (index) => {
     this.setState({ CURRENT_PAGE: index });
   };
-
-  togglePagination = () =>
-    this.state.movies.length / this.state.MOVIE_PER_PAGE > 1 ? (
-      <Pagination
-        totalPage={Math.ceil(
-          this.state.movies.length / this.state.MOVIE_PER_PAGE
-        )}
-        gotoPage={this.gotoPage}
-        currentPage={this.state.CURRENT_PAGE}
-      />
-    ) : (
-      ""
-    );
 
   render() {
     return this.renderMovies();
